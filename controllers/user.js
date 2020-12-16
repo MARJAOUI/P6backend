@@ -4,23 +4,30 @@ const jwt = require('jsonwebtoken'); // importation de JWT pour la création et 
 const passwordValidator = require('password-validator'); //importation de password-validator
 const User = require('../models/user');
 const mongoMask = require('mongo-mask');
-/*var blacklist = ['email'];
+
+/*const maskjson = require('mask-json');
+var blacklist = ['email'];
 const maskjson = require('mask-json')(blacklist);*/
-//const maskjson = require('mask-json');
+
 
 exports.signup = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)   // algorythme de cryptage du mot de passe: fonction asynchrone
     .then(hash => {                   // mot de pass sous forme d'algotythme
       const user = new User({        //  déclaration d'un nouvel utilisateur avec pour objet
-      //email: (req.body.email),      //  adresse mail
-       // email: maskData.maskEmail2(req.body.email),
-        email: mongoMask(req.body.email),
-        password: hash             // mot de passe créé et crypté
+      email: (req.body.email),      //  adresse mail
+      password: hash             // mot de passe créé et crypté
       });
       //console.log(email);
       user.save()
-        .then(() => res.status(201).json({ message: 'Utilisateur créé !' })) // renvoi statut 2001 pour ne pas figer la fonction
-        .catch(error => res.status(400).json({ error }));
+      .then(() => {
+          const user = ({
+          email : mongoMask(req.body.email),
+          password: hash  
+          });
+        }) 
+
+        /*.then(() => res.status(201).json({ message: 'Utilisateur créé !' })) // renvoi statut 2001 pour ne pas figer la fonction
+        .catch(error => res.status(400).json({ error }));*/
     })
     .catch(error => res.status(500).json({ error: 'Le mot de passe ne respecte pas les prérequis préconisés'}));
 };
