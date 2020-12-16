@@ -19,15 +19,8 @@ exports.signup = (req, res, next) => {
       });
       //console.log(email);
       user.save()
-      .then(() => {
-          const user = ({
-          email : mongoMask(req.body.email),
-          password: hash  
-          });
-        }) 
-
-        /*.then(() => res.status(201).json({ message: 'Utilisateur créé !' })) // renvoi statut 2001 pour ne pas figer la fonction
-        .catch(error => res.status(400).json({ error }));*/
+      .then(() => res.status(201).json({ message: 'Utilisateur créé !' })) // renvoi statut 2001 pour ne pas figer la fonction
+       .catch(error => res.status(400).json({ error }));
     })
     .catch(error => res.status(500).json({ error: 'Le mot de passe ne respecte pas les prérequis préconisés'}));
 };
@@ -52,8 +45,9 @@ exports.signup = (req, res, next) => {
 };*/
 
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email }) // récupération du user avec l'adresse mail
+  User.findOne({ email: req.body.email },{id:'_id', password:'password'}) // récupération du user avec l'adresse mail
     .then(user => {
+      console.log(user)
       if (!user) { // si user non connu
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });
       }
@@ -73,6 +67,6 @@ exports.login = (req, res, next) => {
         })
         .catch(error => res.status(500).json({ error }));
     })
-    .catch(error => res.status(500).json({ error }));
+    .catch(error => console.log(error));//res.status(500).json({ error }));
 };
 
